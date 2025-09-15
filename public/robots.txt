@@ -1,0 +1,5 @@
+# robots.txt for freeeクリア - freee人事労務 操作体験ポータル
+# Block all crawlers to prevent indexing
+
+User-agent: *
+Disallow: /

@@ -1,0 +1,238 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Enhanced focus styles for better visibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-slate-600 dark:ring-slate-400;
+  }
+
+  /* High contrast focus for buttons and links */
+  button:focus-visible,
+  a:focus-visible {
+    @apply ring-offset-background;
+  }
+
+  /* Skip link styles */
+  .sr-only:focus {
+    @apply not-sr-only absolute;
+  }
+}
+
+@layer utilities {
+  /* Screen reader only text */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .not-sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  /* Focus trap utility */
+  .focus-trap {
+    position: relative;
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .high-contrast-border {
+      @apply border-2 border-current;
+    }
+
+    button,
+    a {
+      @apply underline;
+    }
+
+    button:hover,
+    a:hover {
+      @apply no-underline;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Mobile viewport height fix for modals */
+  @supports (-webkit-touch-callout: none) {
+    .h-mobile-full {
+      height: -webkit-fill-available;
+    }
+  }
+
+  /* Safe area insets for mobile devices */
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Mobile-optimized font size system */
+  /* Minimum font size for readability: 14px on mobile */
+
+  /* Headings - responsive with minimum sizes */
+  .text-h1 {
+    @apply text-3xl sm:text-4xl md:text-5xl font-bold;
+  }
+
+  .text-h2 {
+    @apply text-2xl sm:text-3xl md:text-4xl font-bold;
+  }
+
+  .text-h3 {
+    @apply text-xl sm:text-2xl md:text-3xl font-semibold;
+  }
+
+  .text-h4 {
+    @apply text-lg sm:text-xl md:text-2xl font-semibold;
+  }
+
+  /* Body text - minimum 14px on mobile */
+  .text-body-lg {
+    @apply text-base sm:text-lg md:text-xl;
+  }
+
+  .text-body {
+    @apply text-sm sm:text-base;
+  }
+
+  .text-body-sm {
+    @apply text-sm;
+  }
+
+  /* UI elements - consistent sizes */
+  .text-button {
+    @apply text-sm sm:text-base font-medium;
+  }
+
+  .text-label {
+    @apply text-sm font-medium;
+  }
+
+  .text-caption {
+    @apply text-xs sm:text-sm;
+  }
+
+  /* Mobile-specific overrides */
+  @media (max-width: 640px) {
+    /* Ensure minimum readable font sizes */
+    .text-xs {
+      font-size: 0.75rem; /* 12px - only for less important content */
+    }
+
+    .text-sm {
+      font-size: 0.875rem; /* 14px - minimum for body text */
+    }
+
+    /* Override Tailwind's text utilities for better mobile readability */
+    .text-base {
+      font-size: 1rem; /* 16px */
+    }
+
+    .text-lg {
+      font-size: 1.125rem; /* 18px */
+    }
+
+    .text-xl {
+      font-size: 1.25rem; /* 20px */
+    }
+
+    .text-2xl {
+      font-size: 1.5rem; /* 24px */
+    }
+
+    .text-3xl {
+      font-size: 1.875rem; /* 30px */
+    }
+
+    .text-4xl {
+      font-size: 2.25rem; /* 36px */
+    }
+
+    .text-5xl {
+      font-size: 2.5rem; /* 40px */
+    }
+  }
+}
