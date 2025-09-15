@@ -280,41 +280,6 @@ export default async function Home() {
               })}
             </div>
 
-            {/* リクエストセクション */}
-            <div className="mt-16 mb-8">
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 text-center">
-                <div className="max-w-2xl mx-auto">
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-3">
-                    探している操作ガイドが見つかりませんか？
-                  </h2>
-                  <p className="text-sm sm:text-base text-slate-600 mb-6">
-                    必要な操作ガイドがない場合は、リクエストをお送りください。
-                    <br className="hidden sm:block" />
-                    皆様のご要望をもとに、新しい操作ガイドを作成いたします。
-                  </p>
-                  <Link
-                    href="/request"
-                    className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg text-base font-medium hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 4v16m8-8H4"
-                      />
-                    </svg>
-                    操作ガイドをリクエストする
-                  </Link>
-                </div>
-              </div>
-            </div>
           </main>
 
           {/* フッター */}
