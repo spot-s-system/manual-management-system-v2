@@ -226,7 +226,7 @@ export default function CategoryPage() {
   // Track if we've shown the first manual in the category
   // If there's only one manual total, it should also be locked
   const shouldShowFirstManual = filteredManuals.length > 1;
-  let hasShownFirstManual = false;
+  let globalManualIndex = 0;
 
   // Check if this category has STEP mapping
   const hasStepMapping = !!STEP_MAPPING[category.name];
@@ -386,10 +386,8 @@ export default function CategoryPage() {
                         content: (
                           <div className="space-y-3">
                             {groupManuals.map((manual) => {
-                              const isViewable = shouldShowFirstManual && !hasShownFirstManual;
-                              if (isViewable) {
-                                hasShownFirstManual = true;
-                              }
+                              const isViewable = shouldShowFirstManual && globalManualIndex === 0;
+                              globalManualIndex++;
                               return (
                               <Card
                                 key={manual.id}
@@ -501,10 +499,8 @@ export default function CategoryPage() {
                         </h2>
                         <div className="space-y-3">
                           {groupManuals.map((manual) => {
-                            const isViewable = shouldShowFirstManual && !hasShownFirstManual;
-                            if (isViewable) {
-                              hasShownFirstManual = true;
-                            }
+                            const isViewable = shouldShowFirstManual && globalManualIndex === 0;
+                            globalManualIndex++;
                             return (
                             <Card
                               key={manual.id}
@@ -620,10 +616,8 @@ export default function CategoryPage() {
                       </h2>
                       <div className="space-y-3">
                         {groupManuals.map((manual) => {
-                          const isViewable = shouldShowFirstManual && !hasShownFirstManual;
-                          if (isViewable) {
-                            hasShownFirstManual = true;
-                          }
+                          const isViewable = shouldShowFirstManual && globalManualIndex === 0;
+                          globalManualIndex++;
                           return (
                           <Card
                             key={manual.id}
