@@ -14,6 +14,7 @@ import {
   CreditCard,
   Filter,
   LayoutGrid,
+  Lock,
   Package,
   Shield,
   Users,
@@ -222,6 +223,11 @@ export default function CategoryPage() {
     return true;
   });
 
+  // Track if we've shown the first manual in the category
+  // If there's only one manual total, it should also be locked
+  const shouldShowFirstManual = filteredManuals.length > 1;
+  let hasShownFirstManual = false;
+
   // Check if this category has STEP mapping
   const hasStepMapping = !!STEP_MAPPING[category.name];
 
@@ -379,12 +385,31 @@ export default function CategoryPage() {
                         title: groupName,
                         content: (
                           <div className="space-y-3">
-                            {groupManuals.map((manual) => (
+                            {groupManuals.map((manual) => {
+                              const isViewable = shouldShowFirstManual && !hasShownFirstManual;
+                              if (isViewable) {
+                                hasShownFirstManual = true;
+                              }
+                              return (
                               <Card
                                 key={manual.id}
-                                className="cursor-pointer hover:shadow-md transition-all duration-200 overflow-hidden"
-                                onClick={() => openModal(manual)}
+                                className={`transition-all duration-200 overflow-hidden relative ${
+                                  isViewable
+                                    ? "cursor-pointer hover:shadow-md"
+                                    : "cursor-not-allowed"
+                                }`}
+                                onClick={() => isViewable && openModal(manual)}
                               >
+                                {!isViewable && (
+                                  <div className="absolute inset-0 bg-slate-100/80 backdrop-blur-[1px] z-10 flex items-center justify-center">
+                                    <div className="bg-white/90 rounded-lg p-3 shadow-sm flex items-center gap-2">
+                                      <Lock className="w-4 h-4 text-slate-600" />
+                                      <span className="text-sm font-medium text-slate-600">
+                                        閲覧制限
+                                      </span>
+                                    </div>
+                                  </div>
+                                )}
                                 <div className="flex flex-col sm:flex-row items-start sm:items-center p-3 sm:p-4 gap-3 sm:gap-4">
                                   <div className="relative w-full sm:w-24 h-32 sm:h-16 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
                                     <Image
@@ -458,7 +483,8 @@ export default function CategoryPage() {
                                   </div>
                                 </div>
                               </Card>
-                            ))}
+                            );
+                            })}
                           </div>
                         ),
                       }))}
@@ -474,12 +500,31 @@ export default function CategoryPage() {
                           {groupName}
                         </h2>
                         <div className="space-y-3">
-                          {groupManuals.map((manual) => (
+                          {groupManuals.map((manual) => {
+                            const isViewable = shouldShowFirstManual && !hasShownFirstManual;
+                            if (isViewable) {
+                              hasShownFirstManual = true;
+                            }
+                            return (
                             <Card
                               key={manual.id}
-                              className="cursor-pointer hover:shadow-md transition-all duration-200 overflow-hidden"
-                              onClick={() => openModal(manual)}
+                              className={`transition-all duration-200 overflow-hidden relative ${
+                                isViewable
+                                  ? "cursor-pointer hover:shadow-md"
+                                  : "cursor-not-allowed"
+                              }`}
+                              onClick={() => isViewable && openModal(manual)}
                             >
+                              {!isViewable && (
+                                <div className="absolute inset-0 bg-slate-100/80 backdrop-blur-[1px] z-10 flex items-center justify-center">
+                                  <div className="bg-white/90 rounded-lg p-3 shadow-sm flex items-center gap-2">
+                                    <Lock className="w-4 h-4 text-slate-600" />
+                                    <span className="text-sm font-medium text-slate-600">
+                                      閲覧制限
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
                               <div className="flex flex-col sm:flex-row items-start sm:items-center p-3 sm:p-4 gap-3 sm:gap-4">
                                 <div className="relative w-full sm:w-24 h-32 sm:h-16 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
                                   <Image
@@ -553,7 +598,8 @@ export default function CategoryPage() {
                                 </div>
                               </div>
                             </Card>
-                          ))}
+                          );
+                          })}
                         </div>
                       </section>
                     ))}
@@ -573,12 +619,31 @@ export default function CategoryPage() {
                         {groupName}
                       </h2>
                       <div className="space-y-3">
-                        {groupManuals.map((manual) => (
+                        {groupManuals.map((manual) => {
+                          const isViewable = shouldShowFirstManual && !hasShownFirstManual;
+                          if (isViewable) {
+                            hasShownFirstManual = true;
+                          }
+                          return (
                           <Card
                             key={manual.id}
-                            className="cursor-pointer hover:shadow-md transition-all duration-200 overflow-hidden"
-                            onClick={() => openModal(manual)}
+                            className={`transition-all duration-200 overflow-hidden relative ${
+                              isViewable
+                                ? "cursor-pointer hover:shadow-md"
+                                : "cursor-not-allowed"
+                            }`}
+                            onClick={() => isViewable && openModal(manual)}
                           >
+                            {!isViewable && (
+                              <div className="absolute inset-0 bg-slate-100/80 backdrop-blur-[1px] z-10 flex items-center justify-center">
+                                <div className="bg-white/90 rounded-lg p-3 shadow-sm flex items-center gap-2">
+                                  <Lock className="w-4 h-4 text-slate-600" />
+                                  <span className="text-sm font-medium text-slate-600">
+                                    閲覧制限
+                                  </span>
+                                </div>
+                              </div>
+                            )}
                             <div className="flex flex-col sm:flex-row items-start sm:items-center p-3 sm:p-4 gap-3 sm:gap-4">
                               <div className="relative w-full sm:w-24 h-32 sm:h-16 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
                                 <Image
@@ -652,7 +717,8 @@ export default function CategoryPage() {
                               </div>
                             </div>
                           </Card>
-                        ))}
+                        );
+                        })}
                       </div>
                     </section>
                   ))}

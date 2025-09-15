@@ -1,12 +1,16 @@
+"use client";
+
 import { CATEGORIES } from "@/app/constants/categories";
 import { CategoryIcon } from "@/components/ui/category-icon";
 import { ErrorMessage } from "@/components/ui/error-message";
 import { PcRecommendationNotice } from "@/components/ui/pc-recommendation-notice";
-import { createClient } from "@/lib/supabase/server";
+import { ManualModal } from "@/components/ui/manual-modal";
+import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Lock } from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
+import { useEffect, useState } from "react";
 
 // カテゴリの表示用データ
 const CATEGORY_DISPLAY = [
@@ -98,18 +102,42 @@ const CATEGORY_DISPLAY = [
 
 type Manual = Database["public"]["Tables"]["manuals"]["Row"];
 
-export default async function Home() {
-  const supabase = await createClient();
+export default function Home() {
+  const [manuals, setManuals] = useState<Manual[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedManual, setSelectedManual] = useState<Manual | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: manuals, error } = await supabase
-    .from("manuals")
-    .select("*")
-    .eq("is_published", true)
-    .order("order_index", { ascending: true });
+  const supabase = createClient();
 
-  if (error) {
-    console.error("Error fetching manuals:", error);
-  }
+  useEffect(() => {
+    const fetchManuals = async () => {
+      const { data, error } = await supabase
+        .from("manuals")
+        .select("*")
+        .eq("is_published", true)
+        .order("order_index", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching manuals:", error);
+      } else {
+        setManuals(data || []);
+      }
+      setLoading(false);
+    };
+
+    fetchManuals();
+  }, []);
+
+  const openModal = (manual: Manual) => {
+    setSelectedManual(manual);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedManual(null);
+  };
 
   // カテゴリごとにマニュアルをグループ化
   const categoryManuals = (manuals || []).reduce(
@@ -147,8 +175,18 @@ export default async function Home() {
     },
   };
 
-  try {
+  if (loading) {
     return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
+          <p className="mt-4 text-slate-600">読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
       <>
         <Script id="homepage-jsonld" type="application/ld+json" strategy="afterInteractive">
           {JSON.stringify(jsonLd)}
@@ -169,6 +207,11 @@ export default async function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {CATEGORY_DISPLAY.map((category) => {
                 const manuals = categoryManuals[category.slug] || [];
+
+                // Skip categories with no manuals
+                if (manuals.length === 0) {
+                  return null;
+                }
 
                 return (
                   <div
@@ -234,27 +277,77 @@ export default async function Home() {
                           ? CATEGORIES[categoryKey].subcategories
                           : [];
 
-                        if (subcategories.length > 0) {
+                        // Show all manuals, but style differently for locked ones
+                        if (manuals.length > 0) {
+                          // Group manuals by subcategory
+                          const groupedManuals: Record<string, typeof manuals> = {};
+                          for (const manual of manuals) {
+                            const subCat = manual.sub_category || "その他";
+                            if (!groupedManuals[subCat]) {
+                              groupedManuals[subCat] = [];
+                            }
+                            groupedManuals[subCat].push(manual);
+                          }
+
+                          // Show up to 4 items total
+                          let itemsShown = 0;
+                          const maxItems = 4;
+                          // If there's only one manual total, it should also be locked
+                          const shouldShowFirstManual = manuals.length > 1;
+                          let isFirstManual = true;
+
                           return (
                             <div className="space-y-1">
-                              {subcategories.slice(0, 4).map((subcat) => (
-                                <Link
-                                  key={subcat}
-                                  href={`/category/${category.slug}#subcategory-${subcat.replace(/\s+/g, "-")}`}
-                                  className="block px-3 py-2 text-sm sm:text-sm text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-lg transition-colors"
-                                >
-                                  {subcat}
-                                </Link>
-                              ))}
+                              {Object.entries(groupedManuals).map(([subcat, subManuals]) => {
+                                if (itemsShown >= maxItems) return null;
+                                
+                                return subManuals.map((manual) => {
+                                  if (itemsShown >= maxItems) return null;
+                                  itemsShown++;
+                                  
+                                  const isViewable = shouldShowFirstManual && isFirstManual;
+                                  if (isFirstManual) {
+                                    isFirstManual = false;
+                                  }
+                                  
+                                  if (isViewable) {
+                                    return (
+                                      <button
+                                        key={manual.id}
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          openModal(manual);
+                                        }}
+                                        className="block w-full text-left px-3 py-2 text-sm sm:text-sm rounded-lg transition-colors relative text-slate-700 hover:text-blue-600 hover:bg-slate-50 cursor-pointer"
+                                      >
+                                        <span>
+                                          {manual.sub_category || manual.title}
+                                        </span>
+                                      </button>
+                                    );
+                                  } else {
+                                    return (
+                                      <div
+                                        key={manual.id}
+                                        className="block px-3 py-2 text-sm sm:text-sm rounded-lg transition-colors relative text-slate-400 bg-slate-50/50"
+                                      >
+                                        <Lock className="w-3 h-3 inline-block mr-1" />
+                                        <span className="opacity-50">
+                                          {manual.sub_category || manual.title}
+                                        </span>
+                                      </div>
+                                    );
+                                  }
+                                });
+                              })}
+                              {manuals.length > maxItems && (
+                                <p className="px-3 py-1 text-xs text-slate-500">
+                                  他{manuals.length - maxItems}件
+                                </p>
+                              )}
                             </div>
-                          );
-                        }
-                        if (manuals.length > 0) {
-                          // サブカテゴリがない場合は、マニュアルがあることを表示
-                          return (
-                            <p className="text-sm sm:text-sm text-slate-600">
-                              {manuals.length}件のマニュアル
-                            </p>
                           );
                         }
                         return (
@@ -277,7 +370,7 @@ export default async function Home() {
                     </div>
                   </div>
                 );
-              })}
+              }).filter(Boolean)}
             </div>
 
           </main>
@@ -289,19 +382,11 @@ export default async function Home() {
             </div>
           </footer>
         </div>
+
+        {/* マニュアルモーダル */}
+        {selectedManual && (
+          <ManualModal isOpen={isModalOpen} onClose={closeModal} manual={selectedManual} />
+        )}
       </>
     );
-  } catch (error) {
-    console.error("Unexpected error in Home page:", error);
-    return (
-      <div className="min-h-screen bg-slate-100">
-        <main className="container mx-auto px-4 py-8">
-          <ErrorMessage
-            title="予期しないエラーが発生しました"
-            message="ページの読み込み中にエラーが発生しました。"
-          />
-        </main>
-      </div>
-    );
-  }
 }
