@@ -389,6 +389,119 @@ export default function CategoryPage() {
                               const isViewable = shouldShowFirstManual && globalManualIndex === 0;
                               globalManualIndex++;
                               return (
+                                <Card
+                                  key={manual.id}
+                                  className={`transition-all duration-200 overflow-hidden relative ${
+                                    isViewable
+                                      ? "cursor-pointer hover:shadow-md"
+                                      : "cursor-not-allowed"
+                                  }`}
+                                  onClick={() => isViewable && openModal(manual)}
+                                >
+                                  {!isViewable && (
+                                    <div className="absolute inset-0 bg-slate-100/80 backdrop-blur-[1px] z-10 flex items-center justify-center">
+                                      <div className="bg-white/90 rounded-lg p-3 shadow-sm flex items-center gap-2">
+                                        <Lock className="w-4 h-4 text-slate-600" />
+                                        <span className="text-sm font-medium text-slate-600">
+                                          閲覧制限
+                                        </span>
+                                      </div>
+                                    </div>
+                                  )}
+                                  <div className="flex flex-col sm:flex-row items-start sm:items-center p-3 sm:p-4 gap-3 sm:gap-4">
+                                    <div className="relative w-full sm:w-24 h-32 sm:h-16 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
+                                      <Image
+                                        src="/preview.png"
+                                        alt={manual.title}
+                                        fill
+                                        className="object-cover"
+                                        sizes="(max-width: 640px) 100vw, 96px"
+                                      />
+                                    </div>
+                                    <div className="flex-1 min-w-0 w-full">
+                                      <h3 className="text-sm sm:text-base font-medium text-slate-800 truncate">
+                                        {manual.title}
+                                      </h3>
+                                      <div className="space-y-1 mt-2">
+                                        {(() => {
+                                          const targetTags =
+                                            manual.tags?.filter(
+                                              (tag) => tag === "管理者向け" || tag === "従業員向け"
+                                            ) || [];
+                                          const planTags =
+                                            manual.tags?.filter(
+                                              (tag) =>
+                                                tag === "ミニマム" ||
+                                                tag === "スターター" ||
+                                                tag === "スタンダード" ||
+                                                tag === "プロフェッショナル" ||
+                                                tag === "アドバンス"
+                                            ) || [];
+
+                                          return (
+                                            <>
+                                              {targetTags.length > 0 && (
+                                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 text-xs">
+                                                  <span className="text-slate-600 shrink-0">
+                                                    対象者：
+                                                  </span>
+                                                  <div className="flex flex-wrap gap-1">
+                                                    {targetTags.map((target) => (
+                                                      <span
+                                                        key={target}
+                                                        className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full"
+                                                      >
+                                                        {target}
+                                                      </span>
+                                                    ))}
+                                                  </div>
+                                                </div>
+                                              )}
+                                              {planTags.length > 0 && (
+                                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 text-xs">
+                                                  <span className="text-slate-600 shrink-0">
+                                                    freee契約プラン：
+                                                  </span>
+                                                  <div className="flex flex-wrap gap-1">
+                                                    {planTags.map((plan) => (
+                                                      <span
+                                                        key={plan}
+                                                        className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full"
+                                                      >
+                                                        {plan}
+                                                      </span>
+                                                    ))}
+                                                  </div>
+                                                </div>
+                                              )}
+                                            </>
+                                          );
+                                        })()}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </Card>
+                              );
+                            })}
+                          </div>
+                        ),
+                      }))}
+                    className="mt-8"
+                  />
+
+                  {/* Handle non-STEP groups (その他) */}
+                  {sortedGroups
+                    .filter(([groupName]) => !groupName.startsWith("STEP"))
+                    .map(([groupName, { manuals: groupManuals }]) => (
+                      <section key={groupName} className="mt-8">
+                        <h2 className="text-lg sm:text-xl font-bold mb-4 text-slate-800">
+                          {groupName}
+                        </h2>
+                        <div className="space-y-3">
+                          {groupManuals.map((manual) => {
+                            const isViewable = shouldShowFirstManual && globalManualIndex === 0;
+                            globalManualIndex++;
+                            return (
                               <Card
                                 key={manual.id}
                                 className={`transition-all duration-200 overflow-hidden relative ${
@@ -482,32 +595,34 @@ export default function CategoryPage() {
                                 </div>
                               </Card>
                             );
-                            })}
-                          </div>
-                        ),
-                      }))}
-                    className="mt-8"
-                  />
-
-                  {/* Handle non-STEP groups (その他) */}
-                  {sortedGroups
-                    .filter(([groupName]) => !groupName.startsWith("STEP"))
-                    .map(([groupName, { manuals: groupManuals }]) => (
-                      <section key={groupName} className="mt-8">
-                        <h2 className="text-lg sm:text-xl font-bold mb-4 text-slate-800">
-                          {groupName}
-                        </h2>
-                        <div className="space-y-3">
-                          {groupManuals.map((manual) => {
-                            const isViewable = shouldShowFirstManual && globalManualIndex === 0;
-                            globalManualIndex++;
-                            return (
+                          })}
+                        </div>
+                      </section>
+                    ))}
+                </div>
+              ) : (
+                // Original layout for non-STEP categories
+                <div className="space-y-8">
+                  {sortedGroups.map(([groupName, { manuals: groupManuals }]) => (
+                    <section key={groupName} id={`group-${groupName.replace(/\s+/g, "-")}`}>
+                      <h2
+                        className={`text-lg sm:text-xl font-bold mb-4 scroll-mt-24 ${
+                          hasStepMapping && groupName.startsWith("STEP")
+                            ? "text-blue-800 bg-blue-50 p-3 rounded-lg"
+                            : "text-slate-800"
+                        }`}
+                      >
+                        {groupName}
+                      </h2>
+                      <div className="space-y-3">
+                        {groupManuals.map((manual) => {
+                          const isViewable = shouldShowFirstManual && globalManualIndex === 0;
+                          globalManualIndex++;
+                          return (
                             <Card
                               key={manual.id}
                               className={`transition-all duration-200 overflow-hidden relative ${
-                                isViewable
-                                  ? "cursor-pointer hover:shadow-md"
-                                  : "cursor-not-allowed"
+                                isViewable ? "cursor-pointer hover:shadow-md" : "cursor-not-allowed"
                               }`}
                               onClick={() => isViewable && openModal(manual)}
                             >
@@ -595,123 +710,6 @@ export default function CategoryPage() {
                               </div>
                             </Card>
                           );
-                          })}
-                        </div>
-                      </section>
-                    ))}
-                </div>
-              ) : (
-                // Original layout for non-STEP categories
-                <div className="space-y-8">
-                  {sortedGroups.map(([groupName, { manuals: groupManuals }]) => (
-                    <section key={groupName} id={`group-${groupName.replace(/\s+/g, "-")}`}>
-                      <h2
-                        className={`text-lg sm:text-xl font-bold mb-4 scroll-mt-24 ${
-                          hasStepMapping && groupName.startsWith("STEP")
-                            ? "text-blue-800 bg-blue-50 p-3 rounded-lg"
-                            : "text-slate-800"
-                        }`}
-                      >
-                        {groupName}
-                      </h2>
-                      <div className="space-y-3">
-                        {groupManuals.map((manual) => {
-                          const isViewable = shouldShowFirstManual && globalManualIndex === 0;
-                          globalManualIndex++;
-                          return (
-                          <Card
-                            key={manual.id}
-                            className={`transition-all duration-200 overflow-hidden relative ${
-                              isViewable
-                                ? "cursor-pointer hover:shadow-md"
-                                : "cursor-not-allowed"
-                            }`}
-                            onClick={() => isViewable && openModal(manual)}
-                          >
-                            {!isViewable && (
-                              <div className="absolute inset-0 bg-slate-100/80 backdrop-blur-[1px] z-10 flex items-center justify-center">
-                                <div className="bg-white/90 rounded-lg p-3 shadow-sm flex items-center gap-2">
-                                  <Lock className="w-4 h-4 text-slate-600" />
-                                  <span className="text-sm font-medium text-slate-600">
-                                    閲覧制限
-                                  </span>
-                                </div>
-                              </div>
-                            )}
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center p-3 sm:p-4 gap-3 sm:gap-4">
-                              <div className="relative w-full sm:w-24 h-32 sm:h-16 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
-                                <Image
-                                  src="/preview.png"
-                                  alt={manual.title}
-                                  fill
-                                  className="object-cover"
-                                  sizes="(max-width: 640px) 100vw, 96px"
-                                />
-                              </div>
-                              <div className="flex-1 min-w-0 w-full">
-                                <h3 className="text-sm sm:text-base font-medium text-slate-800 truncate">
-                                  {manual.title}
-                                </h3>
-                                <div className="space-y-1 mt-2">
-                                  {(() => {
-                                    const targetTags =
-                                      manual.tags?.filter(
-                                        (tag) => tag === "管理者向け" || tag === "従業員向け"
-                                      ) || [];
-                                    const planTags =
-                                      manual.tags?.filter(
-                                        (tag) =>
-                                          tag === "ミニマム" ||
-                                          tag === "スターター" ||
-                                          tag === "スタンダード" ||
-                                          tag === "プロフェッショナル" ||
-                                          tag === "アドバンス"
-                                      ) || [];
-
-                                    return (
-                                      <>
-                                        {targetTags.length > 0 && (
-                                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 text-xs">
-                                            <span className="text-slate-600 shrink-0">
-                                              対象者：
-                                            </span>
-                                            <div className="flex flex-wrap gap-1">
-                                              {targetTags.map((target) => (
-                                                <span
-                                                  key={target}
-                                                  className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full"
-                                                >
-                                                  {target}
-                                                </span>
-                                              ))}
-                                            </div>
-                                          </div>
-                                        )}
-                                        {planTags.length > 0 && (
-                                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 text-xs">
-                                            <span className="text-slate-600 shrink-0">
-                                              freee契約プラン：
-                                            </span>
-                                            <div className="flex flex-wrap gap-1">
-                                              {planTags.map((plan) => (
-                                                <span
-                                                  key={plan}
-                                                  className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full"
-                                                >
-                                                  {plan}
-                                                </span>
-                                              ))}
-                                            </div>
-                                          </div>
-                                        )}
-                                      </>
-                                    );
-                                  })()}
-                                </div>
-                              </div>
-                            </div>
-                          </Card>
-                        );
                         })}
                       </div>
                     </section>

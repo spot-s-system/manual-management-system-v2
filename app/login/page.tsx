@@ -139,9 +139,7 @@ export default function LoginPage() {
 
           {/* フッター */}
           <div className="mt-8 pt-6 border-t border-gray-200 text-center">
-            <p className="text-xs text-gray-500">
-              Powered by スポット社労士くん
-            </p>
+            <p className="text-xs text-gray-500">Powered by スポット社労士くん</p>
           </div>
         </div>
       </div>

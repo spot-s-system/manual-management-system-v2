@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 export function HeaderWithSearch() {
-
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
       {/* デスクトップヘッダー */}
@@ -26,7 +25,6 @@ export function HeaderWithSearch() {
                 <p className="text-xs text-slate-600">freee人事労務 操作体験ポータル</p>
               </div>
             </Link>
-
           </div>
         </div>
       </div>
@@ -51,9 +49,7 @@ export function HeaderWithSearch() {
               </p>
             </div>
           </Link>
-
         </div>
-
       </div>
     </header>
   );

@@ -127,7 +127,7 @@ export default function Home() {
     };
 
     fetchManuals();
-  }, []);
+  }, [supabase]);
 
   const openModal = (manual: Manual) => {
     setSelectedManual(manual);
@@ -210,14 +210,16 @@ export default function Home() {
               </span>
               <p className="text-sm text-slate-600 mt-2">
                 ※弊社給与計算サービスをご利用の方は全てご覧いただけます。
-                <a 
-                  href="https://spot-s.or.jp/new-support/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  onClick={() => {
+                    const element = document.getElementById("salary-service-section");
+                    element?.scrollIntoView({ behavior: "smooth" });
+                  }}
                   className="text-blue-600 hover:text-blue-700 underline ml-1"
                 >
                   詳しくはこちら
-                </a>
+                </button>
               </p>
             </div>
             <PcRecommendationNotice className="max-w-3xl mx-auto" />
@@ -240,41 +242,43 @@ export default function Home() {
                   <Link href={`/category/${category.slug}`} className="block p-6 pb-4">
                     <div className="flex items-center gap-3">
                       <div
-                        className={`${category.slug.startsWith("onboarding")
-                          ? "bg-blue-100"
-                          : category.slug === "bonus"
-                            ? "bg-green-100"
-                            : category.slug === "leave"
-                              ? "bg-purple-100"
-                              : category.slug === "resignation"
-                                ? "bg-red-100"
-                                : category.slug === "attendance"
-                                  ? "bg-orange-100"
-                                  : category.slug === "salary-deduction"
-                                    ? "bg-yellow-100"
-                                    : category.slug === "documents"
-                                      ? "bg-cyan-100"
-                                      : "bg-gray-100"
-                          } p-2 rounded-lg`}
+                        className={`${
+                          category.slug.startsWith("onboarding")
+                            ? "bg-blue-100"
+                            : category.slug === "bonus"
+                              ? "bg-green-100"
+                              : category.slug === "leave"
+                                ? "bg-purple-100"
+                                : category.slug === "resignation"
+                                  ? "bg-red-100"
+                                  : category.slug === "attendance"
+                                    ? "bg-orange-100"
+                                    : category.slug === "salary-deduction"
+                                      ? "bg-yellow-100"
+                                      : category.slug === "documents"
+                                        ? "bg-cyan-100"
+                                        : "bg-gray-100"
+                        } p-2 rounded-lg`}
                       >
                         <CategoryIcon
                           iconName={category.icon_name}
-                          className={`w-6 h-6 ${category.slug.startsWith("onboarding")
-                            ? "text-blue-600"
-                            : category.slug === "bonus"
-                              ? "text-green-600"
-                              : category.slug === "leave"
-                                ? "text-purple-600"
-                                : category.slug === "resignation"
-                                  ? "text-red-600"
-                                  : category.slug === "attendance"
-                                    ? "text-orange-600"
-                                    : category.slug === "salary-deduction"
-                                      ? "text-yellow-600"
-                                      : category.slug === "documents"
-                                        ? "text-cyan-600"
-                                        : "text-gray-600"
-                            } group-hover:scale-110 transition-transform`}
+                          className={`w-6 h-6 ${
+                            category.slug.startsWith("onboarding")
+                              ? "text-blue-600"
+                              : category.slug === "bonus"
+                                ? "text-green-600"
+                                : category.slug === "leave"
+                                  ? "text-purple-600"
+                                  : category.slug === "resignation"
+                                    ? "text-red-600"
+                                    : category.slug === "attendance"
+                                      ? "text-orange-600"
+                                      : category.slug === "salary-deduction"
+                                        ? "text-yellow-600"
+                                        : category.slug === "documents"
+                                          ? "text-cyan-600"
+                                          : "text-gray-600"
+                          } group-hover:scale-110 transition-transform`}
                         />
                       </div>
                       <h3 className="text-base sm:text-lg font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">
@@ -339,9 +343,7 @@ export default function Home() {
                                       }}
                                       className="block w-full text-left px-3 py-2 text-sm sm:text-sm rounded-lg transition-colors relative text-slate-700 hover:text-blue-600 hover:bg-slate-50 cursor-pointer"
                                     >
-                                      <span>
-                                        {manual.sub_category || manual.title}
-                                      </span>
+                                      <span>{manual.sub_category || manual.title}</span>
                                     </button>
                                   );
                                 }
@@ -367,9 +369,7 @@ export default function Home() {
                         );
                       }
                       return (
-                        <p className="text-xs sm:text-sm text-slate-500">
-                          コンテンツは準備中です
-                        </p>
+                        <p className="text-xs sm:text-sm text-slate-500">コンテンツは準備中です</p>
                       );
                     })()}
                   </div>
@@ -390,7 +390,7 @@ export default function Home() {
           </div>
 
           {/* 給与計算サービス紹介セクション */}
-          <div className="mt-16 mb-8">
+          <div id="salary-service-section" className="mt-16 mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center mb-8">
               当社の給与計算サービス
             </h2>
@@ -411,7 +411,11 @@ export default function Home() {
                   <div className="mb-5">
                     <div className="flex">
                       <div className="bg-indigo-500 text-white px-4 py-3 text-sm font-bold flex items-center justify-center min-w-[100px] leading-tight">
-                        <span>提供<br />サービス</span>
+                        <span>
+                          提供
+                          <br />
+                          サービス
+                        </span>
                       </div>
                       <div className="bg-gray-50 flex-1 px-5 py-3 border border-l-0 border-gray-300">
                         <ul className="text-sm text-gray-600 space-y-2">
@@ -463,7 +467,11 @@ export default function Home() {
                   <div className="mb-5">
                     <div className="flex">
                       <div className="bg-indigo-500 text-white px-4 py-3 text-sm font-bold flex items-center justify-center min-w-[100px] leading-tight">
-                        <span>提供<br />サービス</span>
+                        <span>
+                          提供
+                          <br />
+                          サービス
+                        </span>
                       </div>
                       <div className="bg-gray-50 flex-1 px-5 py-3 border border-l-0 border-gray-300">
                         <ul className="text-sm text-gray-600 space-y-2">
@@ -515,7 +523,11 @@ export default function Home() {
                   <div className="mb-5">
                     <div className="flex">
                       <div className="bg-indigo-500 text-white px-4 py-3 text-sm font-bold flex items-center justify-center min-w-[100px] leading-tight">
-                        <span>提供<br />サービス</span>
+                        <span>
+                          提供
+                          <br />
+                          サービス
+                        </span>
                       </div>
                       <div className="bg-gray-50 flex-1 px-5 py-3 border border-l-0 border-gray-300">
                         <ul className="text-sm text-gray-600 space-y-2">
@@ -551,9 +563,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
           </div>
-
         </main>
 
         {/* フッター */}
